@@ -1,6 +1,6 @@
 ﻿import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
-import { getMeetings } from '@/lib/meetings-db';
+import { getMeetingByDate } from '@/lib/meetings-db';
 
 export default async function CurrentMeetingPage() {
   await connection();
@@ -15,11 +15,18 @@ export default async function CurrentMeetingPage() {
   const day = String(sunday.getDate()).padStart(2, '0');
   const sundayIso = `${year}-${month}-${day}`;
 
-  const meetings = await getMeetings(sundayIso);
+  const meeting = await getMeetingByDate(sundayIso);
 
-  if (meetings.length > 0) {
-    redirect(`/meetings/${meetings[0].id}`);
+  if (meeting) {
+    redirect(`/meetings/${meeting.id}`);
   }
 
-  redirect('/meetings');
+  return (
+    <main className="p-8">
+      <h1 className="text-2xl font-bold mb-4">Current Week's Meeting</h1>
+      <p className="text-gray-600">
+        No sacrament meeting found for this week ({sundayIso}). Please check your database seed dates or view <a href="/meetings" className="text-blue-600 underline">All Meetings</a>.
+      </p>
+    </main>
+  );
 }

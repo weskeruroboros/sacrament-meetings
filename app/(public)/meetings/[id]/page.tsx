@@ -7,8 +7,9 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-async function MeetingDetailContent({ id }: { id: string }) {
-  const numericId = parseInt(id, 10);
+async function MeetingDetailContent({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const numericId = parseInt(resolvedParams.id, 10);
   const meeting = isNaN(numericId) ? null : await getMeetingById(numericId);
 
   if (!meeting) {
@@ -29,10 +30,7 @@ async function MeetingDetailContent({ id }: { id: string }) {
   return <MeetingDetail meeting={meeting} />;
 }
 
-export default async function MeetingPage({ params }: PageProps) {
-  const resolvedParams = await params;
-  const { id } = resolvedParams;
-
+export default function MeetingPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -45,7 +43,7 @@ export default async function MeetingPage({ params }: PageProps) {
       </div>
 
       <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading meeting details...</div>}>
-        <MeetingDetailContent id={id} />
+        <MeetingDetailContent params={params} />
       </Suspense>
     </div>
   );

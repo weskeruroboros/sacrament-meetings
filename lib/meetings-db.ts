@@ -15,16 +15,16 @@ export async function getMeetings(
     SELECT
       id,
       to_char(date, 'YYYY-MM-DD') AS "date",
-      meeting_type                AS "meetingType",
+      meeting_type                    AS "meetingType",
       presiding, conducting, announcements,
-      opening_hymn                AS "openingHymn",
-      opening_prayer              AS "openingPrayer",
-      ward_business               AS "wardBusiness",
-      stake_business              AS "stakeBusiness",
-      sacrament_hymn              AS "sacramentHymn",
+      opening_hymn                    AS "openingHymn",
+      opening_prayer                  AS "openingPrayer",
+      ward_business                   AS "wardBusiness",
+      stake_business                  AS "stakeBusiness",
+      sacrament_hymn                  AS "sacramentHymn",
       speakers,
-      closing_hymn                AS "closingHymn",
-      closing_prayer              AS "closingPrayer"
+      closing_hymn                    AS "closingHymn",
+      closing_prayer                  AS "closingPrayer"
     FROM meetings
     WHERE
       presiding     ILIKE ${searchTerm}
@@ -59,22 +59,43 @@ export async function getMeetingById(
     SELECT
       id,
       to_char(date, 'YYYY-MM-DD') AS "date",
-      meeting_type                AS "meetingType",
+      meeting_type                    AS "meetingType",
       presiding, conducting, announcements,
-      opening_hymn                AS "openingHymn",
-      opening_prayer              AS "openingPrayer",
-      ward_business               AS "wardBusiness",
-      stake_business              AS "stakeBusiness",
-      sacrament_hymn              AS "sacramentHymn",
+      opening_hymn                    AS "openingHymn",
+      opening_prayer                  AS "openingPrayer",
+      ward_business                   AS "wardBusiness",
+      stake_business                  AS "stakeBusiness",
+      sacrament_hymn                  AS "sacramentHymn",
       speakers,
-      closing_hymn                AS "closingHymn",
-      closing_prayer              AS "closingPrayer"
+      closing_hymn                    AS "closingHymn",
+      closing_prayer                  AS "closingPrayer"
     FROM meetings WHERE id = ${id}
   `;
   return (rows[0] as unknown as SacramentMeeting) ?? null;
 }
 
-// Mutation stubs — will be wired to the database in Week 04
+export async function getMeetingByDate(
+  dateStr: string
+): Promise<SacramentMeeting | null> {
+  const rows = await sql`
+    SELECT
+      id,
+      to_char(date, 'YYYY-MM-DD') AS "date",
+      meeting_type                    AS "meetingType",
+      presiding, conducting, announcements,
+      opening_hymn                    AS "openingHymn",
+      opening_prayer                  AS "openingPrayer",
+      ward_business                   AS "wardBusiness",
+      stake_business                  AS "stakeBusiness",
+      sacrament_hymn                  AS "sacramentHymn",
+      speakers,
+      closing_hymn                    AS "closingHymn",
+      closing_prayer                  AS "closingPrayer"
+    FROM meetings WHERE to_char(date, 'YYYY-MM-DD') = ${dateStr}
+  `;
+  return (rows[0] as unknown as SacramentMeeting) ?? null;
+}
+
 export async function addMeeting(
   data: Omit<SacramentMeeting, 'id'>
 ): Promise<SacramentMeeting> {
