@@ -94,6 +94,8 @@ const meetings: SacramentMeeting[] = [
   }
 ];
 
+const ITEMS_PER_PAGE = 5;
+
 export function getMeetings(date?: string | null): SacramentMeeting[] {
   if (date) {
     return meetings.filter(m => m.date === date);
@@ -103,4 +105,29 @@ export function getMeetings(date?: string | null): SacramentMeeting[] {
 
 export function getMeetingById(id: number): SacramentMeeting | null {
   return meetings.find(m => m.id === id) ?? null;
+}
+
+// Helper to filter meetings by query (matching presiding, conducting, or speakers)
+function filterMeetings(query: string) {
+  if (!query) return meetings;
+  const lowerQuery = query.toLowerCase();
+  return meetings.filter(m => {
+    const matchPresiding = m.presiding?.toLowerCase().includes(lowerQuery);
+    const matchConducting = m.conducting?.toLowerCase().includes(lowerQuery);
+    const matchSpeaker = m.speakers?.some(
+      s => s.name.toLowerCase().includes(lowerQuery) || s.topic.toLowerCase().includes(lowerQuery)
+    );
+    return matchPresiding || matchConducting || matchSpeaker;
+  });
+}
+
+export async function getMeetingsTotalPages(query: string): Promise<number> {
+  const filtered = filterMeetings(query);
+  return Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+}
+
+export async function getFilteredMeetings(query: string, currentPage: number): Promise<SacramentMeeting[]> {
+  const filtered = filterMeetings(query);
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  return filtered.slice(offset, offset + ITEMS_PER_PAGE);
 }
