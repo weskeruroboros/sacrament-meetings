@@ -1,21 +1,26 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import NavLinks from './NavLinks';
 
-export default function Header() {
-  const [dateString, setDateString] = useState<string>('');
+const emptySubscribe = () => () => {};
 
-  useEffect(() => {
-    const todayFormatted = new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-    setDateString(todayFormatted);
-  }, []);
+function formatCurrentDate(): string {
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+export default function Header() {
+  const dateString = useSyncExternalStore(
+    emptySubscribe,
+    formatCurrentDate,
+    () => ''
+  );
 
   return (
     <header className="bg-blue-900 text-white shadow-md">

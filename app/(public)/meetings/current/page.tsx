@@ -1,4 +1,5 @@
-﻿import { redirect } from 'next/navigation';
+﻿import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
 import { getMeetingByDate } from '@/lib/meetings-db';
 
@@ -23,9 +24,13 @@ export default async function CurrentMeetingPage() {
 
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Current Week's Meeting</h1>
+      <h1 className="text-2xl font-bold mb-4">Current Week&apos;s Meeting</h1>
       <p className="text-gray-600">
-        No sacrament meeting found for this week ({sundayIso}). Please check your database seed dates or view <a href="/meetings" className="text-blue-600 underline">All Meetings</a>.
+        No sacrament meeting found for this week ({sundayIso}). Please check your database seed dates or view{' '}
+        <Link href="/meetings" className="text-blue-600 underline">
+          All Meetings
+        </Link>
+        .
       </p>
     </main>
   );
